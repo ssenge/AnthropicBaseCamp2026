@@ -9,6 +9,7 @@ export default {
     restocking: '補充発注',
     reports: 'レポート',
     backlog: 'バックログ',
+    activity: 'アクティビティ',
     mainNavigation: 'メインナビゲーション',
     collapseSidebar: 'サイドバーを折りたたむ',
     expandSidebar: 'サイドバーを展開',
@@ -401,6 +402,81 @@ export default {
     dueDate: '期限',
     addTask: 'タスクを追加',
     noTasks: 'タスクがありません。上記からタスクを追加してください！'
+  },
+
+  // 発注書
+  purchaseOrder: {
+    createButton: '発注書を作成',
+    viewButton: '発注書を表示',
+    createTitle: '発注書の作成',
+    viewTitle: '発注書',
+    closeLabel: 'ダイアログを閉じる',
+    item: '品目',
+    shortage: '不足数',
+    units: '{count}個',
+    supplier: '仕入先',
+    selectSupplier: '仕入先を選択',
+    supplierOption: '{name} - リードタイム{days}日、評価 {rating}',
+    suppliersLoadError: '仕入先の読み込みに失敗しました',
+    quantity: '数量',
+    unitCost: '単価 (USD)',
+    unitCostHint: '1個あたりの単価を米ドルで入力してください',
+    expectedDelivery: '納品予定日',
+    deliveryHint: '仕入先のリードタイムから自動入力されます。変更できます。',
+    notes: '備考 (任意)',
+    notesLabel: '備考',
+    total: '合計',
+    submit: '発注書を作成',
+    submitting: '作成中...',
+    poNumber: '発注番号',
+    status: 'ステータス',
+    createdDate: '作成日',
+    loadError: '発注書の読み込みに失敗しました',
+    createError: '発注書の作成に失敗しました',
+    noNotes: '備考なし',
+    statusValues: {
+      submitted: '提出済み'
+    }
+  },
+
+  // アクティビティログ
+  activity: {
+    title: 'アクティビティログ',
+    description: 'システムで行われた最近の変更を新しい順に表示します',
+    refresh: '更新',
+    loadError: 'アクティビティログの読み込みに失敗しました',
+    empty: 'アクティビティはまだありません。タスク、補充注文、発注書などの変更がここに表示されます。',
+    table: {
+      time: '日時',
+      action: '操作',
+      entity: '対象',
+      reference: '参照ID',
+      detail: '詳細'
+    },
+    actions: {
+      created: '作成',
+      updated: '更新',
+      deleted: '削除'
+    },
+    entities: {
+      restock_order: '補充注文',
+      task: 'タスク',
+      purchase_order: '発注書'
+    }
+  },
+
+  // 在庫不足アラート
+  lowStock: {
+    title: '在庫不足アラート',
+    bellLabel: '在庫不足アラート: {count}件',
+    empty: '現在のフィルターでは在庫不足の品目はありません。',
+    onHand: '在庫 {onHand} / 発注点 {reorder}',
+    viewInventory: '在庫を表示',
+    moreItems: '他{count}件は表示されていません',
+    severity: {
+      critical: '緊急',
+      warning: '警告'
+    }
   },
 
   // Language

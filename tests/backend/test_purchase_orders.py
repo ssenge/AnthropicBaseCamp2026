@@ -10,7 +10,7 @@ VALID_PO = {
     "supplier_name": "Pacific Industrial Supply",
     "quantity": 350,
     "unit_cost": 6.2,
-    "expected_delivery_date": "2026-12-01",
+    "expected_delivery_date": "2099-12-01",
 }
 
 
@@ -46,7 +46,7 @@ class TestPurchaseOrderEndpoints:
         assert response.status_code == 201
         po = response.json()
         assert po["status"] == "Submitted"
-        assert po["expected_delivery_date"] == "2026-12-01"
+        assert po["expected_delivery_date"] == "2099-12-01"
         assert client.get("/api/purchase-orders/1").json()["id"] == po["id"]
 
         flags = {b["id"]: b["has_purchase_order"] for b in client.get("/api/backlog").json()}
@@ -68,6 +68,7 @@ class TestPurchaseOrderEndpoints:
     @pytest.mark.parametrize("change, status", [
         ({"backlog_item_id": "nope"}, 404),
         ({"supplier_name": "Nobody Ltd"}, 400),
+        ({"expected_delivery_date": "2020-01-01"}, 400),
         ({"quantity": 0}, 422),
         ({"unit_cost": 0}, 422),
         ({"expected_delivery_date": "soon"}, 422),

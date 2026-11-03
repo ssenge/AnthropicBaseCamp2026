@@ -273,14 +273,22 @@ export default {
   margin-bottom: 0.75rem;
 }
 
+/* The amount drops below the slider when both can't fit, rather than overflowing the card */
 .budget-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.5rem 1.25rem;
+}
+
+.card-header {
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .budget-slider {
-  flex: 1;
+  flex: 1 1 12rem;
+  min-width: 0;
   accent-color: #2563eb;
   cursor: pointer;
 }
@@ -291,6 +299,7 @@ export default {
 
 .budget-amount {
   min-width: 8rem;
+  margin-left: auto;
   text-align: right;
   font-size: 1.5rem;
   font-weight: 700;

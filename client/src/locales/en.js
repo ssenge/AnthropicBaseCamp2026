@@ -9,6 +9,7 @@ export default {
     restocking: 'Restocking',
     reports: 'Reports',
     backlog: 'Backlog',
+    activity: 'Activity Log',
     mainNavigation: 'Main navigation',
     collapseSidebar: 'Collapse sidebar',
     expandSidebar: 'Expand sidebar',
@@ -401,6 +402,81 @@ export default {
     dueDate: 'Due Date',
     addTask: 'Add Task',
     noTasks: 'No tasks yet. Add your first task above!'
+  },
+
+  // Purchase orders
+  purchaseOrder: {
+    createButton: 'Create PO',
+    viewButton: 'View PO',
+    createTitle: 'Create Purchase Order',
+    viewTitle: 'Purchase Order',
+    closeLabel: 'Close dialog',
+    item: 'Item',
+    shortage: 'Shortage',
+    units: '{count} units',
+    supplier: 'Supplier',
+    selectSupplier: 'Select a supplier',
+    supplierOption: '{name} - {days} days lead time, rating {rating}',
+    suppliersLoadError: 'Failed to load suppliers',
+    quantity: 'Quantity',
+    unitCost: 'Unit cost (USD)',
+    unitCostHint: 'Enter the cost per unit in US dollars',
+    expectedDelivery: 'Expected delivery date',
+    deliveryHint: 'Suggested from the supplier lead time. You can change it.',
+    notes: 'Notes (optional)',
+    notesLabel: 'Notes',
+    total: 'Total',
+    submit: 'Create purchase order',
+    submitting: 'Creating...',
+    poNumber: 'PO number',
+    status: 'Status',
+    createdDate: 'Created',
+    loadError: 'Failed to load the purchase order',
+    createError: 'Failed to create the purchase order',
+    noNotes: 'No notes',
+    statusValues: {
+      submitted: 'Submitted'
+    }
+  },
+
+  // Activity log
+  activity: {
+    title: 'Activity Log',
+    description: 'Recent changes made in the system, newest first',
+    refresh: 'Refresh',
+    loadError: 'Failed to load the activity log',
+    empty: 'No activity yet. Changes such as new tasks, restock orders and purchase orders will appear here.',
+    table: {
+      time: 'Time',
+      action: 'Action',
+      entity: 'Entity',
+      reference: 'Reference',
+      detail: 'Detail'
+    },
+    actions: {
+      created: 'Created',
+      updated: 'Updated',
+      deleted: 'Deleted'
+    },
+    entities: {
+      restock_order: 'Restock order',
+      task: 'Task',
+      purchase_order: 'Purchase order'
+    }
+  },
+
+  // Low stock alerts
+  lowStock: {
+    title: 'Low stock alerts',
+    bellLabel: 'Low stock alerts: {count}',
+    empty: 'No low stock items for the current filters.',
+    onHand: '{onHand} on hand / reorder at {reorder}',
+    viewInventory: 'View inventory',
+    moreItems: '{count} more not shown',
+    severity: {
+      critical: 'Critical',
+      warning: 'Warning'
+    }
   },
 
   // Language

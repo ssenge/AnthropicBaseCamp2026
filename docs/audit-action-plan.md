@@ -21,9 +21,9 @@ Fix 2 and 3 together before any real deployment.
 | 4 | Task add, delete and toggle failures only reach the console, with no UI error or rollback. Reviewers disagreed on the rating. | `client/src/App.vue:108-110`, `:129`, `:150` | Medium | Medium |
 | 5 | A slower earlier response can overwrite a newer one after a filter change. Reports and Restocking are guarded; Orders and Dashboard are not. | `client/src/views/Orders.vue:163`, `Dashboard.vue:676` | Low | Medium |
 | 6 | List endpoints are unbounded, with no pagination | `server/main.py` | Low | Medium to High |
-| 7 | Purchase orders are unfinished: Create PO opens nothing, and `api.js` calls routes that don't exist | `client/src/views/Dashboard.vue:289`, `client/src/api.js:97-105` | Medium | Medium |
+| 7 | Fixed since this audit: purchase orders now have routes and a modal | | | |
 | 8 | Filter labels have no `for`/`id`, clickable rows are mouse-only, and focus outlines are removed | `client/src/components/FilterBar.vue:6-7`, `Inventory.vue:55-56`, `Dashboard.vue:191` | Medium | Medium |
-| 9 | Almost no responsive design: one media query in `App.vue`, plus fixed widths | `client/src/App.vue:245`, `Dashboard.vue:836` | Medium | Medium |
+| 9 | Fixed since this audit: the redesign removes page-level overflow down to 375px | | | |
 
 ## P3: backlog
 

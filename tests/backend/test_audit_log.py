@@ -50,7 +50,7 @@ class TestAuditLogEndpoints:
             "supplier_name": "Pacific Industrial Supply",
             "quantity": 350,
             "unit_cost": 6.2,
-            "expected_delivery_date": "2026-12-01",
+            "expected_delivery_date": "2099-12-01",
         })
         assert [e["entity"] for e in client.get("/api/audit-log").json()] == ["purchase_order", "restock_order"]
 

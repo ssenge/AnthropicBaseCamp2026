@@ -50,6 +50,7 @@
     <div class="main-column">
       <header class="topbar">
         <div class="topbar-actions">
+          <LowStockAlerts />
           <LanguageSwitcher />
           <ProfileMenu
             @show-profile-details="showProfileDetails = true"
@@ -91,6 +92,7 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import LowStockAlerts from './components/LowStockAlerts.vue'
 
 const SIDEBAR_KEY = 'sidebar-collapsed'
 
@@ -104,7 +106,8 @@ const navItems = [
   { path: '/demand', labelKey: 'nav.demandForecast', icon: ['M3 17l6-6 4 4 8-8', 'M15 7h6v6'] },
   { path: '/restocking', labelKey: 'nav.restocking', icon: ['M21 12a9 9 0 01-15.5 6.2', 'M3 12a9 9 0 0115.5-6.2', 'M18.5 2v4h-4', 'M5.5 22v-4h4'] },
   { path: '/reports', labelKey: 'nav.reports', icon: ['M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z', 'M14 3v5h5', 'M9 13h6', 'M9 17h6'] },
-  { path: '/backlog', labelKey: 'nav.backlog', icon: ['M12 3a9 9 0 100 18 9 9 0 000-18z', 'M12 7v5l3 2'] }
+  { path: '/backlog', labelKey: 'nav.backlog', icon: ['M12 3a9 9 0 100 18 9 9 0 000-18z', 'M12 7v5l3 2'] },
+  { path: '/activity', labelKey: 'nav.activity', icon: ['M22 12h-4l-3 9L9 3l-3 9H2'] }
 ]
 
 const brandIcon = ['M21 8l-9-5-9 5v8l9 5 9-5V8z', 'M3 8l9 5 9-5', 'M12 13v8']
@@ -124,7 +127,8 @@ export default {
     ProfileMenu,
     ProfileDetailsModal,
     TasksModal,
-    LanguageSwitcher
+    LanguageSwitcher,
+    LowStockAlerts
   },
   setup() {
     const { currentUser } = useAuth()

@@ -587,6 +587,8 @@ def create_purchase_order(request: CreatePurchaseOrderRequest):
         raise HTTPException(status_code=409, detail=f"Backlog item {request.backlog_item_id} already has a purchase order")
     if not any(supplier["name"] == request.supplier_name for supplier in suppliers):
         raise HTTPException(status_code=400, detail=f"Unknown supplier: {request.supplier_name}")
+    if request.expected_delivery_date < date.today():
+        raise HTTPException(status_code=400, detail="Expected delivery date is in the past")
 
     po = {
         **request.model_dump(),
