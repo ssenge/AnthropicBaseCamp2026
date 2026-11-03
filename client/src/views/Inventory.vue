@@ -32,6 +32,9 @@
               </svg>
             </button>
           </div>
+          <button class="export-btn" :disabled="!filteredItems.length" @click="exportCsv">
+            {{ t('inventory.exportCsv') }}
+          </button>
         </div>
         <div class="table-container">
           <table>
@@ -201,6 +204,39 @@ export default {
       showItemModal.value = true
     }
 
+    // RFC 4180 escaping: quote fields containing comma, quote or newline, double inner quotes.
+    // Also prefix formula-trigger chars (= + - @) with ' to prevent CSV injection in spreadsheets.
+    const csvCell = (value) => {
+      let s = String(value ?? '')
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s
+      return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
+    }
+
+    // Exports exactly the rows shown (filters + search + sort), using the displayed (translated) values
+    const exportCsv = () => {
+      const headers = ['sku', 'itemName', 'category', 'quantityOnHand', 'reorderPoint', 'unitCost', 'totalValue', 'location', 'status']
+        .map(k => t(`inventory.table.${k}`))
+      const rows = filteredItems.value.map(item => [
+        item.sku,
+        translateProductName(item.name),
+        translateCategory(item.category),
+        item.quantity_on_hand,
+        item.reorder_point,
+        item.unit_cost.toFixed(2),
+        (item.quantity_on_hand * item.unit_cost).toFixed(2),
+        translateWarehouse(item.location),
+        getStockStatus(item)
+      ])
+      const csv = [headers, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n')
+      // BOM so Excel reads UTF-8 (Japanese) correctly
+      const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'inventory.csv'
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+
     onMounted(loadInventory)
 
     return {
@@ -216,6 +252,7 @@ export default {
       showItemModal,
       selectedItem,
       showItemDetail,
+      exportCsv,
       currencySymbol,
       translateProductName,
       translateWarehouse
@@ -315,6 +352,26 @@ export default {
 .clear-search svg {
   width: 18px;
   height: 18px;
+}
+
+.export-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  color: #0f172a;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.export-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .loading,
