@@ -821,6 +821,13 @@ export default {
   grid-column: 1 / -1;
 }
 
+/* Let grid children shrink below their content width */
+.charts-grid > *,
+.order-health-container > * {
+  min-width: 0;
+}
+
+
 .chart-content {
   padding: 1rem;
 }
@@ -1267,5 +1274,32 @@ export default {
   background: #475569;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
+}
+
+/* Stack chart cards and the donut layouts on narrow screens (kept last so it overrides the base rules) */
+@media (max-width: 899px) {
+  .charts-grid,
+  .order-health-container {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-chart {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+/* Phones: put the bar label above its bar so the value is not clipped */
+@media (max-width: 480px) {
+  .h-bar-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.375rem;
+  }
+
+  .h-bar-label {
+    width: auto;
+    min-width: 0;
+  }
 }
 </style>

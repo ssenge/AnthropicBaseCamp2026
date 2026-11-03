@@ -279,6 +279,7 @@ export default {
 .chart-container {
   padding: 2rem 1rem;
   min-height: 300px;
+  overflow-x: auto; /* wide chart scrolls inside the card on narrow screens */
 }
 
 .bar-chart {
@@ -287,6 +288,7 @@ export default {
   justify-content: space-around;
   height: 250px;
   gap: 0.5rem;
+  min-width: 560px;
 }
 
 .bar-wrapper {

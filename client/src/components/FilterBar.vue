@@ -101,35 +101,31 @@ export default {
 </script>
 
 <style scoped>
+/* Lives inside the app topbar (App.vue), so no own background or sticky offset */
 .filters-bar {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 0.75rem 0;
-  position: sticky;
-  top: 70px;
-  z-index: 90;
+  width: 100%;
 }
 
 .filters-container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 2rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .filters-grid {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
   flex: 1;
+  min-width: 0;
 }
 
 .filter-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .filter-group label {
@@ -149,17 +145,32 @@ export default {
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
-  min-width: 140px;
+  min-width: 8.5rem;
+  max-width: 100%;
+}
+
+@media (max-width: 899px) {
+  /* Two filters per row on narrow screens, label above the select */
+  .filter-group {
+    flex: 1 1 calc(50% - 0.5rem);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+
+  .filter-select {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .filter-select:hover {
   border-color: #94a3b8;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.filter-select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
 }
 
 .reset-filters-btn {
