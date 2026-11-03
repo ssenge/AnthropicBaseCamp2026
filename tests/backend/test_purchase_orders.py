@@ -69,9 +69,11 @@ class TestPurchaseOrderEndpoints:
         ({"backlog_item_id": "nope"}, 404),
         ({"supplier_name": "Nobody Ltd"}, 400),
         ({"expected_delivery_date": "2020-01-01"}, 400),
+        ({"quantity": 351}, 400),
         ({"quantity": 0}, 422),
         ({"unit_cost": 0}, 422),
         ({"expected_delivery_date": "soon"}, 422),
+        ({"notes": "x" * 501}, 422),
     ])
     def test_invalid_purchase_order_rejected(self, client, change, status):
         """Test that bad input is rejected and nothing is stored."""

@@ -31,7 +31,7 @@ Fix 2 and 3 together before any real deployment.
 |---|---|---|---|
 | 10 | Profile menu has no `aria-expanded`; task delete is a bare `×` with no confirmation | `client/src/components/ProfileMenu.vue:3-6`, `TasksModal.vue:86-90` | Medium (UX) |
 | 11 | Top-products computed is O(orders × items × inventory); four requests per filter change | `client/src/views/Dashboard.vue:501`, `:567-570` | Low, Medium in prod |
-| 12 | Restock orders can be replayed because stock is never deducted | `server/main.py`, `create_restock_order` | Low, Medium in prod |
+| 12 | Fixed since this audit: submitted restock orders now reduce the remaining need | | |
 | 13 | Tasks and restock orders grow without bound; no title length cap | `server/main.py` | Low, Medium in prod |
 | 14 | Server binds to `0.0.0.0` instead of `127.0.0.1` | `server/main.py:514` | Low, High in prod |
 | 15 | Free-form filter strings; `month` is a substring match. No injection risk without a database. | `server/main.py:31`, `:35-49` | Low |

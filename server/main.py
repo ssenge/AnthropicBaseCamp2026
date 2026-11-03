@@ -156,9 +156,10 @@ class CreatePurchaseOrderRequest(BaseModel):
     backlog_item_id: str
     supplier_name: str
     quantity: int = Field(gt=0)
+    # Client-supplied, unlike restock prices: it records the supplier's quote, which the server has no data to check
     unit_cost: float = Field(gt=0)
     expected_delivery_date: date
-    notes: Optional[str] = None
+    notes: Optional[str] = Field(None, max_length=500)
 
 class Supplier(BaseModel):
     id: str
@@ -276,11 +277,17 @@ def restock_needs() -> list:
     for item in inventory_items:
         on_hand[item['sku']] = on_hand.get(item['sku'], 0) + item['quantity_on_hand']
 
+    # Orders are never marked as received, so every submitted one still counts as incoming stock
+    on_order = {}
+    for order in restock_orders:
+        for line in order['items']:
+            on_order[line['item_sku']] = on_order.get(line['item_sku'], 0) + line['quantity']
+
     needs = []
     for forecast in demand_forecasts:
         # A SKU missing from inventory is treated as out of stock, so it needs its full forecast
         stock = on_hand.get(forecast['item_sku'], 0)
-        needed = forecast['forecasted_demand'] - stock
+        needed = forecast['forecasted_demand'] - stock - on_order.get(forecast['item_sku'], 0)
         if needed > 0:
             needs.append({
                 'item_sku': forecast['item_sku'],
@@ -581,7 +588,8 @@ def get_suppliers():
 @app.post("/api/purchase-orders", response_model=PurchaseOrder, status_code=201)
 def create_purchase_order(request: CreatePurchaseOrderRequest):
     """Create the purchase order that resolves a backlog item"""
-    if not any(item["id"] == request.backlog_item_id for item in backlog_items):
+    backlog_item = next((item for item in backlog_items if item["id"] == request.backlog_item_id), None)
+    if not backlog_item:
         raise HTTPException(status_code=404, detail=f"Backlog item {request.backlog_item_id} not found")
     if any(po["backlog_item_id"] == request.backlog_item_id for po in purchase_orders):
         raise HTTPException(status_code=409, detail=f"Backlog item {request.backlog_item_id} already has a purchase order")
@@ -589,6 +597,9 @@ def create_purchase_order(request: CreatePurchaseOrderRequest):
         raise HTTPException(status_code=400, detail=f"Unknown supplier: {request.supplier_name}")
     if request.expected_delivery_date < date.today():
         raise HTTPException(status_code=400, detail="Expected delivery date is in the past")
+    shortage = backlog_item["quantity_needed"] - backlog_item["quantity_available"]
+    if request.quantity > shortage:
+        raise HTTPException(status_code=400, detail=f"Quantity exceeds the {shortage} units short")
 
     po = {
         **request.model_dump(),
