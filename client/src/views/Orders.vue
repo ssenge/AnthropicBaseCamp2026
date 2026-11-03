@@ -27,6 +27,52 @@
         </div>
       </div>
 
+      <div v-if="restockOrders.length > 0" class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('restocking.submittedOrders') }} ({{ restockOrders.length }})</h3>
+        </div>
+        <div class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th class="col-order-number">{{ t('restocking.table.orderNumber') }}</th>
+                <th class="col-date">{{ t('restocking.table.submittedAt') }}</th>
+                <th class="col-items">{{ t('restocking.table.items') }}</th>
+                <th class="col-value">{{ t('restocking.table.total') }}</th>
+                <th class="col-status">{{ t('restocking.table.status') }}</th>
+                <th class="col-date">{{ t('restocking.table.deliveryLeadTime') }}</th>
+                <th class="col-date">{{ t('restocking.table.expectedDelivery') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in restockOrders" :key="order.id">
+                <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
+                <td class="col-date">{{ formatDate(order.submitted_at) }}</td>
+                <td class="col-items">
+                  <details class="items-details">
+                    <summary class="items-summary">
+                      {{ t('orders.itemsCount', { count: order.items.length }) }}
+                    </summary>
+                    <div class="items-dropdown">
+                      <div v-for="item in order.items" :key="item.item_sku" class="item-entry">
+                        <span class="item-name">{{ translateProductName(item.item_name) }}</span>
+                        <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ formatMoney(item.unit_cost) }}</span>
+                      </div>
+                    </div>
+                  </details>
+                </td>
+                <td class="col-value"><strong>{{ formatMoney(order.total_cost) }}</strong></td>
+                <td class="col-status">
+                  <span class="badge info">{{ t(`status.${order.status.toLowerCase()}`) }}</span>
+                </td>
+                <td class="col-date">{{ t('restocking.days', { count: order.lead_time_days }) }}</td>
+                <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">{{ t('orders.allOrders') }} ({{ orders.length }})</h3>
@@ -83,6 +129,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { formatCurrency, formatCurrencyWithDecimals } from '../utils/currency'
 
 export default {
   name: 'Orders',
@@ -95,6 +142,9 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    // Restocking orders have no warehouse/category, so they are kept apart from `orders`
+    // (and from the status stats) and ignore the global filters
+    const restockOrders = ref([])
 
     // Use shared filters
     const {
@@ -108,6 +158,7 @@ export default {
     const loadOrders = async () => {
       try {
         loading.value = true
+        error.value = null
         const filters = getCurrentFilters()
         const fetchedOrders = await api.getOrders(filters)
 
@@ -121,6 +172,15 @@ export default {
         error.value = 'Failed to load orders: ' + err.message
       } finally {
         loading.value = false
+      }
+    }
+
+    const loadRestockOrders = async () => {
+      try {
+        restockOrders.value = await api.getRestockOrders()
+      } catch (err) {
+        // Non-critical section: keep the page usable and just hide it
+        console.error('Failed to load restocking orders:', err)
       }
     }
 
@@ -153,7 +213,13 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    // Unit costs are fractional (e.g. 2.40), so show cents in USD; JPY rounds to whole yen
+    const formatMoney = (amount) => formatCurrencyWithDecimals(amount, currentCurrency.value, 2)
+
+    onMounted(() => {
+      loadOrders()
+      loadRestockOrders()
+    })
 
     return {
       t,
@@ -164,6 +230,10 @@ export default {
       getOrderStatusClass,
       formatDate,
       currencySymbol,
+      currentCurrency,
+      formatCurrency,
+      formatMoney,
+      restockOrders,
       translateProductName,
       translateCustomerName
     }

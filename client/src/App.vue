@@ -22,8 +22,14 @@
           <router-link to="/demand" :class="{ active: $route.path === '/demand' }">
             {{ t('nav.demandForecast') }}
           </router-link>
+          <router-link to="/restocking" :class="{ active: $route.path === '/restocking' }">
+            {{ t('nav.restocking') }}
+          </router-link>
           <router-link to="/reports" :class="{ active: $route.path === '/reports' }">
-            Reports
+            {{ t('nav.reports') }}
+          </router-link>
+          <router-link to="/backlog" :class="{ active: $route.path === '/backlog' }">
+            {{ t('nav.backlog') }}
           </router-link>
         </nav>
         <LanguageSwitcher />
@@ -232,11 +238,19 @@ body {
 
 .nav-tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.125rem;
+}
+
+/* With 8 tabs the subtitle no longer fits next to the nav below this width */
+@media (max-width: 1700px) {
+  .subtitle {
+    display: none;
+  }
 }
 
 .nav-tabs a {
-  padding: 0.625rem 1.25rem;
+  padding: 0.625rem 0.875rem;
+  white-space: nowrap;
   color: #64748b;
   text-decoration: none;
   font-weight: 500;

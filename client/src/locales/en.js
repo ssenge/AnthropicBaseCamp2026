@@ -6,6 +6,9 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
+    reports: 'Reports',
+    backlog: 'Backlog',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -198,12 +201,104 @@ export default {
     allMonths: 'All Months'
   },
 
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Choose a budget and review which items to reorder',
+    budget: 'Budget',
+    budgetSlider: 'Restocking budget',
+    maxBudget: 'Full coverage: {amount}',
+    recommendedSpend: 'Recommended Spend',
+    remaining: 'Remaining',
+    recommendations: 'Recommendations',
+    partial: 'Partial',
+    partialHint: 'Only part of the needed quantity fits the budget',
+    empty: 'Nothing fits this budget. Increase the budget to see recommendations.',
+    noNeeds: 'No items need restocking right now.',
+    placeOrder: 'Place Order',
+    placing: 'Placing order...',
+    orderPlaced: 'Order {orderNumber} submitted. Expected delivery: {date}.',
+    viewOrders: 'View orders',
+    orderFailed: 'Could not place the order.',
+    loadError: 'Failed to load recommendations: {message}',
+    days: '{count} days',
+    submittedOrders: 'Submitted Orders',
+    table: {
+      sku: 'SKU',
+      item: 'Item',
+      trend: 'Trend',
+      onHand: 'On Hand',
+      needed: 'Needed',
+      quantity: 'Recommended Qty',
+      unitCost: 'Unit Cost',
+      lineCost: 'Line Cost',
+      leadTime: 'Lead Time',
+      orderNumber: 'Order Number',
+      submittedAt: 'Submitted',
+      items: 'Items',
+      total: 'Total',
+      status: 'Status',
+      deliveryLeadTime: 'Delivery Lead Time',
+      expectedDelivery: 'Expected Delivery'
+    }
+  },
+
+  // Reports
+  reports: {
+    title: 'Performance Reports',
+    description: 'View quarterly performance metrics and monthly trends',
+    loadError: 'Failed to load reports: {message}',
+    empty: 'No data for the selected filters',
+    notAvailable: 'N/A',
+    quarterly: {
+      title: 'Quarterly Performance',
+      quarter: 'Quarter',
+      totalOrders: 'Total Orders',
+      totalRevenue: 'Total Revenue',
+      avgOrderValue: 'Avg Order Value',
+      fulfillmentRate: 'Fulfillment Rate'
+    },
+    monthlyTrend: {
+      title: 'Monthly Revenue Trend'
+    },
+    monthOverMonth: {
+      title: 'Month-over-Month Analysis',
+      month: 'Month',
+      orders: 'Orders',
+      revenue: 'Revenue',
+      change: 'Change',
+      growthRate: 'Growth Rate'
+    },
+    stats: {
+      totalRevenue: 'Total Revenue',
+      avgMonthlyRevenue: 'Avg Monthly Revenue',
+      totalOrders: 'Total Orders',
+      bestQuarter: 'Best Performing Quarter'
+    }
+  },
+
+  // Backlog
+  backlog: {
+    title: 'Backlog Management',
+    description: 'Track and resolve inventory shortages',
+    loadError: 'Failed to load backlog: {message}',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    lowPriority: 'Low Priority',
+    totalItems: 'Total Backlog Items',
+    itemsTitle: 'Backlog Items',
+    empty: 'No backlog items - all orders can be fulfilled!',
+    unitsShort: '{count} units short',
+    days: '{count} days'
+  },
+
   // Statuses
   status: {
     delivered: 'Delivered',
     shipped: 'Shipped',
     processing: 'Processing',
     backordered: 'Backordered',
+    submitted: 'Submitted',
     inStock: 'In Stock',
     lowStock: 'Low Stock',
     adequate: 'Adequate'
