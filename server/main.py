@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
-from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
+from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders, suppliers
 
 app = FastAPI(title="Factory Inventory Management System")
 
@@ -155,10 +155,51 @@ class PurchaseOrder(BaseModel):
 class CreatePurchaseOrderRequest(BaseModel):
     backlog_item_id: str
     supplier_name: str
-    quantity: int
-    unit_cost: float
-    expected_delivery_date: str
+    quantity: int = Field(gt=0)
+    unit_cost: float = Field(gt=0)
+    expected_delivery_date: date
     notes: Optional[str] = None
+
+class Supplier(BaseModel):
+    id: str
+    name: str
+    lead_time_days: int
+    rating: float
+    contact_email: str
+
+class LowStockAlert(BaseModel):
+    id: str
+    sku: str
+    name: str
+    category: str
+    warehouse: str
+    quantity_on_hand: int
+    reorder_point: int
+    shortfall: int
+    severity: Literal['critical', 'warning']
+
+class AuditEntry(BaseModel):
+    id: int
+    timestamp: str
+    action: str
+    entity: str
+    entity_id: str
+    detail: str
+
+# In-memory like the other mock data: the trail starts empty on every restart
+audit_log = []
+audit_ids = count(1)
+
+def record_audit(action: str, entity: str, entity_id: str, detail: str) -> None:
+    """Append to the audit trail. Call only after a write has succeeded."""
+    audit_log.append({
+        'id': next(audit_ids),
+        'timestamp': datetime.now().isoformat(timespec='seconds'),
+        'action': action,
+        'entity': entity,
+        'entity_id': entity_id,
+        'detail': detail
+    })
 
 # API endpoints
 @app.get("/")
@@ -172,6 +213,25 @@ def get_inventory(
 ):
     """Get all inventory items with optional filtering"""
     return apply_filters(inventory_items, warehouse, category)
+
+# Declared before /api/inventory/{item_id}, which would otherwise capture "low-stock" as an id
+@app.get("/api/inventory/low-stock", response_model=List[LowStockAlert])
+def get_low_stock_alerts(
+    warehouse: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Get items at or below their reorder point, most depleted first"""
+    alerts = []
+    for item in apply_filters(inventory_items, warehouse, category):
+        if item["quantity_on_hand"] <= item["reorder_point"]:
+            alerts.append({
+                **item,
+                'shortfall': item["reorder_point"] - item["quantity_on_hand"],
+                # Below half the reorder point leaves little buffer for a normal delivery lead time
+                'severity': 'critical' if item["quantity_on_hand"] < item["reorder_point"] / 2 else 'warning'
+            })
+    alerts.sort(key=lambda a: (a['quantity_on_hand'] / a['reorder_point'] if a['reorder_point'] else 0, a['sku']))
+    return alerts
 
 @app.get("/api/inventory/{item_id}", response_model=InventoryItem)
 def get_inventory_item(item_id: str):
@@ -305,6 +365,7 @@ def create_restock_order(request: CreateRestockOrderRequest):
         'items': lines
     }
     restock_orders.append(order)
+    record_audit('created', 'restock_order', order['order_number'], f"{len(lines)} items, total {total_cost:.2f}")
     return order
 
 @app.get("/api/restocking/orders", response_model=List[RestockOrder])
@@ -493,6 +554,7 @@ def create_task(request: CreateTaskRequest):
     """Create a pending task"""
     task = {**request.model_dump(), 'id': f"task-{next(task_ids)}", 'status': 'pending'}
     tasks.insert(0, task)
+    record_audit('created', 'task', task['id'], task['title'])
     return task
 
 @app.patch("/api/tasks/{task_id}", response_model=Task)
@@ -500,6 +562,7 @@ def toggle_task(task_id: str):
     """Flip a task between pending and completed"""
     task = find_task(task_id)
     task['status'] = 'completed' if task['status'] == 'pending' else 'pending'
+    record_audit('updated', 'task', task['id'], f"{task['title']}: {task['status']}")
     return task
 
 @app.delete("/api/tasks/{task_id}", response_model=Task)
@@ -507,7 +570,47 @@ def delete_task(task_id: str):
     """Delete a task and return it"""
     task = find_task(task_id)
     tasks.remove(task)
+    record_audit('deleted', 'task', task['id'], task['title'])
     return task
+
+@app.get("/api/suppliers", response_model=List[Supplier])
+def get_suppliers():
+    """Get suppliers that purchase orders can be placed with"""
+    return suppliers
+
+@app.post("/api/purchase-orders", response_model=PurchaseOrder, status_code=201)
+def create_purchase_order(request: CreatePurchaseOrderRequest):
+    """Create the purchase order that resolves a backlog item"""
+    if not any(item["id"] == request.backlog_item_id for item in backlog_items):
+        raise HTTPException(status_code=404, detail=f"Backlog item {request.backlog_item_id} not found")
+    if any(po["backlog_item_id"] == request.backlog_item_id for po in purchase_orders):
+        raise HTTPException(status_code=409, detail=f"Backlog item {request.backlog_item_id} already has a purchase order")
+    if not any(supplier["name"] == request.supplier_name for supplier in suppliers):
+        raise HTTPException(status_code=400, detail=f"Unknown supplier: {request.supplier_name}")
+
+    po = {
+        **request.model_dump(),
+        'id': f"PO-{len(purchase_orders) + 1:04d}",
+        'expected_delivery_date': request.expected_delivery_date.isoformat(),
+        'status': 'Submitted',
+        'created_date': datetime.now().isoformat(timespec='seconds')
+    }
+    purchase_orders.append(po)
+    record_audit('created', 'purchase_order', po['id'], f"{po['quantity']} units from {po['supplier_name']}")
+    return po
+
+@app.get("/api/purchase-orders/{backlog_item_id}", response_model=PurchaseOrder)
+def get_purchase_order(backlog_item_id: str):
+    """Get the purchase order for a backlog item"""
+    po = next((po for po in purchase_orders if po["backlog_item_id"] == backlog_item_id), None)
+    if not po:
+        raise HTTPException(status_code=404, detail=f"No purchase order for backlog item {backlog_item_id}")
+    return po
+
+@app.get("/api/audit-log", response_model=List[AuditEntry])
+def get_audit_log(limit: int = Query(100, ge=1, le=500)):
+    """Get recorded write actions, newest first"""
+    return audit_log[-limit:][::-1]
 
 if __name__ == "__main__":
     import uvicorn

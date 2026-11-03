@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SUP-001",
+    "name": "Pacific Industrial Supply",
+    "lead_time_days": 7,
+    "rating": 4.6,
+    "contact_email": "orders@pacific-industrial.example"
+  },
+  {
+    "id": "SUP-002",
+    "name": "Kansai Precision Parts",
+    "lead_time_days": 14,
+    "rating": 4.8,
+    "contact_email": "sales@kansai-precision.example"
+  },
+  {
+    "id": "SUP-003",
+    "name": "Thames Valley Components",
+    "lead_time_days": 10,
+    "rating": 4.2,
+    "contact_email": "trade@thames-components.example"
+  },
+  {
+    "id": "SUP-004",
+    "name": "Northline Motors and Controls",
+    "lead_time_days": 21,
+    "rating": 3.9,
+    "contact_email": "supply@northline.example"
+  }
+]

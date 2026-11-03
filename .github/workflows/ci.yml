@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r server/requirements.txt pytest pytest-asyncio pytest-cov httpx
+      - name: Run tests
+        working-directory: tests
+        run: pytest backend --cov=../server --cov-report=term-missing
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # client/package-lock.json is gitignored on purpose, so npm ci isn't an option
+      - name: Install dependencies
+        working-directory: client
+        run: npm install
+      - name: Build
+        working-directory: client
+        run: npm run build
