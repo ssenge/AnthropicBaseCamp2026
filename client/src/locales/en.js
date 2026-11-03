@@ -6,6 +6,13 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
+    reports: 'Reports',
+    backlog: 'Backlog',
+    activity: 'Activity Log',
+    mainNavigation: 'Main navigation',
+    collapseSidebar: 'Collapse sidebar',
+    expandSidebar: 'Expand sidebar',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -80,6 +87,7 @@ export default {
     skus: 'SKUs',
     searchPlaceholder: 'Search by item name...',
     clearSearch: 'Clear search',
+    exportCsv: 'Export CSV',
     totalItems: 'Total Items',
     totalValue: 'Total Value',
     lowStockItems: 'Low Stock Items',
@@ -198,12 +206,104 @@ export default {
     allMonths: 'All Months'
   },
 
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Choose a budget and review which items to reorder',
+    budget: 'Budget',
+    budgetSlider: 'Restocking budget',
+    maxBudget: 'Full coverage: {amount}',
+    recommendedSpend: 'Recommended Spend',
+    remaining: 'Remaining',
+    recommendations: 'Recommendations',
+    partial: 'Partial',
+    partialHint: 'Only part of the needed quantity fits the budget',
+    empty: 'Nothing fits this budget. Increase the budget to see recommendations.',
+    noNeeds: 'No items need restocking right now.',
+    placeOrder: 'Place Order',
+    placing: 'Placing order...',
+    orderPlaced: 'Order {orderNumber} submitted. Expected delivery: {date}.',
+    viewOrders: 'View orders',
+    orderFailed: 'Could not place the order.',
+    loadError: 'Failed to load recommendations: {message}',
+    days: '{count} days',
+    submittedOrders: 'Submitted Orders',
+    table: {
+      sku: 'SKU',
+      item: 'Item',
+      trend: 'Trend',
+      onHand: 'On Hand',
+      needed: 'Needed',
+      quantity: 'Recommended Qty',
+      unitCost: 'Unit Cost',
+      lineCost: 'Line Cost',
+      leadTime: 'Lead Time',
+      orderNumber: 'Order Number',
+      submittedAt: 'Submitted',
+      items: 'Items',
+      total: 'Total',
+      status: 'Status',
+      deliveryLeadTime: 'Delivery Lead Time',
+      expectedDelivery: 'Expected Delivery'
+    }
+  },
+
+  // Reports
+  reports: {
+    title: 'Performance Reports',
+    description: 'View quarterly performance metrics and monthly trends',
+    loadError: 'Failed to load reports: {message}',
+    empty: 'No data for the selected filters',
+    notAvailable: 'N/A',
+    quarterly: {
+      title: 'Quarterly Performance',
+      quarter: 'Quarter',
+      totalOrders: 'Total Orders',
+      totalRevenue: 'Total Revenue',
+      avgOrderValue: 'Avg Order Value',
+      fulfillmentRate: 'Fulfillment Rate'
+    },
+    monthlyTrend: {
+      title: 'Monthly Revenue Trend'
+    },
+    monthOverMonth: {
+      title: 'Month-over-Month Analysis',
+      month: 'Month',
+      orders: 'Orders',
+      revenue: 'Revenue',
+      change: 'Change',
+      growthRate: 'Growth Rate'
+    },
+    stats: {
+      totalRevenue: 'Total Revenue',
+      avgMonthlyRevenue: 'Avg Monthly Revenue',
+      totalOrders: 'Total Orders',
+      bestQuarter: 'Best Performing Quarter'
+    }
+  },
+
+  // Backlog
+  backlog: {
+    title: 'Backlog Management',
+    description: 'Track and resolve inventory shortages',
+    loadError: 'Failed to load backlog: {message}',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    lowPriority: 'Low Priority',
+    totalItems: 'Total Backlog Items',
+    itemsTitle: 'Backlog Items',
+    empty: 'No backlog items - all orders can be fulfilled!',
+    unitsShort: '{count} units short',
+    days: '{count} days'
+  },
+
   // Statuses
   status: {
     delivered: 'Delivered',
     shipped: 'Shipped',
     processing: 'Processing',
     backordered: 'Backordered',
+    submitted: 'Submitted',
     inStock: 'In Stock',
     lowStock: 'Low Stock',
     adequate: 'Adequate'
@@ -302,6 +402,81 @@ export default {
     dueDate: 'Due Date',
     addTask: 'Add Task',
     noTasks: 'No tasks yet. Add your first task above!'
+  },
+
+  // Purchase orders
+  purchaseOrder: {
+    createButton: 'Create PO',
+    viewButton: 'View PO',
+    createTitle: 'Create Purchase Order',
+    viewTitle: 'Purchase Order',
+    closeLabel: 'Close dialog',
+    item: 'Item',
+    shortage: 'Shortage',
+    units: '{count} units',
+    supplier: 'Supplier',
+    selectSupplier: 'Select a supplier',
+    supplierOption: '{name} - {days} days lead time, rating {rating}',
+    suppliersLoadError: 'Failed to load suppliers',
+    quantity: 'Quantity',
+    unitCost: 'Unit cost (USD)',
+    unitCostHint: 'Enter the cost per unit in US dollars',
+    expectedDelivery: 'Expected delivery date',
+    deliveryHint: 'Suggested from the supplier lead time. You can change it.',
+    notes: 'Notes (optional)',
+    notesLabel: 'Notes',
+    total: 'Total',
+    submit: 'Create purchase order',
+    submitting: 'Creating...',
+    poNumber: 'PO number',
+    status: 'Status',
+    createdDate: 'Created',
+    loadError: 'Failed to load the purchase order',
+    createError: 'Failed to create the purchase order',
+    noNotes: 'No notes',
+    statusValues: {
+      submitted: 'Submitted'
+    }
+  },
+
+  // Activity log
+  activity: {
+    title: 'Activity Log',
+    description: 'Recent changes made in the system, newest first',
+    refresh: 'Refresh',
+    loadError: 'Failed to load the activity log',
+    empty: 'No activity yet. Changes such as new tasks, restock orders and purchase orders will appear here.',
+    table: {
+      time: 'Time',
+      action: 'Action',
+      entity: 'Entity',
+      reference: 'Reference',
+      detail: 'Detail'
+    },
+    actions: {
+      created: 'Created',
+      updated: 'Updated',
+      deleted: 'Deleted'
+    },
+    entities: {
+      restock_order: 'Restock order',
+      task: 'Task',
+      purchase_order: 'Purchase order'
+    }
+  },
+
+  // Low stock alerts
+  lowStock: {
+    title: 'Low stock alerts',
+    bellLabel: 'Low stock alerts: {count}',
+    empty: 'No low stock items for the current filters.',
+    onHand: '{onHand} on hand / reorder at {reorder}',
+    viewInventory: 'View inventory',
+    moreItems: '{count} more not shown',
+    severity: {
+      critical: 'Critical',
+      warning: 'Warning'
+    }
   },
 
   // Language

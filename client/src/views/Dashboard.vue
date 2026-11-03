@@ -210,18 +210,18 @@
                   </td>
                   <td>
                     <button
-                      v-if="!item.purchase_order_id"
+                      v-if="!(item.has_purchase_order || item.purchase_order_id)"
                       @click.stop="openPOModal(item)"
                       class="po-button create"
                     >
-                      Create PO
+                      {{ t('purchaseOrder.createButton') }}
                     </button>
                     <button
                       v-else
                       @click.stop="viewPO(item)"
                       class="po-button view"
                     >
-                      View PO
+                      {{ t('purchaseOrder.viewButton') }}
                     </button>
                   </td>
                 </tr>
@@ -304,12 +304,14 @@ import { useI18n } from '../composables/useI18n'
 import { formatCurrency } from '../utils/currency'
 import ProductDetailModal from '../components/ProductDetailModal.vue'
 import BacklogDetailModal from '../components/BacklogDetailModal.vue'
+import PurchaseOrderModal from '../components/PurchaseOrderModal.vue'
 
 export default {
   name: 'Dashboard',
   components: {
     ProductDetailModal,
     BacklogDetailModal,
+    PurchaseOrderModal
   },
   setup() {
     const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
@@ -666,6 +668,8 @@ export default {
       // Update the backlog item with the new PO ID
       const item = allBacklogItems.value.find(b => b.id === poData.backlog_item_id)
       if (item) {
+        // The API reports has_purchase_order; keep the local item in the same shape
+        item.has_purchase_order = true
         item.purchase_order_id = poData.id
         item.purchase_order = poData
       }
@@ -754,7 +758,7 @@ export default {
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
 }
 
@@ -820,6 +824,13 @@ export default {
 .chart-card.full-width {
   grid-column: 1 / -1;
 }
+
+/* Let grid children shrink below their content width */
+.charts-grid > *,
+.order-health-container > * {
+  min-width: 0;
+}
+
 
 .chart-content {
   padding: 1rem;
@@ -985,6 +996,9 @@ export default {
 
 .h-bar {
   height: 100%;
+  /* Never narrower than its own value label, so short bars (e.g. wide yen amounts) do not clip it */
+  min-width: max-content;
+  padding-left: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -993,6 +1007,7 @@ export default {
 }
 
 .h-bar-value {
+  white-space: nowrap;
   font-size: 0.813rem;
   font-weight: 700;
   color: white;
@@ -1267,5 +1282,32 @@ export default {
   background: #475569;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
+}
+
+/* Stack chart cards and the donut layouts on narrow screens (kept last so it overrides the base rules) */
+@media (max-width: 899px) {
+  .charts-grid,
+  .order-health-container {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-chart {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+/* Phones: put the bar label above its bar so the value is not clipped */
+@media (max-width: 480px) {
+  .h-bar-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.375rem;
+  }
+
+  .h-bar-label {
+    width: auto;
+    min-width: 0;
+  }
 }
 </style>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory System Architecture</title>
+<style>
+  :root {
+    --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --muted: #64748b;
+    --blue: #2563eb; --blue-bg: #eff6ff; --green: #059669; --green-bg: #ecfdf5; --amber: #b45309; --amber-bg: #fffbeb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --border: #334155; --text: #f1f5f9; --muted: #94a3b8;
+      --blue: #93c5fd; --blue-bg: #1e3a5f; --green: #6ee7b7; --green-bg: #064e3b; --amber: #fcd34d; --amber-bg: #451a03;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  h1 { font-size: 1.875rem; letter-spacing: -0.025em; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.125rem; margin: 2.25rem 0 0.75rem; }
+  p { margin: 0 0 0.75rem; }
+  .lede { color: var(--muted); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; overflow-x: auto; }
+  svg { display: block; width: 100%; min-width: 680px; height: auto; }
+  svg text { font-family: inherit; fill: var(--text); }
+  svg .sub { fill: var(--muted); font-size: 12px; }
+  svg .label { fill: var(--muted); font-size: 11.5px; }
+  .fe { fill: var(--blue-bg); stroke: var(--blue); }
+  .be { fill: var(--green-bg); stroke: var(--green); }
+  .da { fill: var(--amber-bg); stroke: var(--amber); }
+  .arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#head); }
+  #head path { fill: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1rem; }
+  .grid h3 { margin: 0 0 0.5rem; font-size: 0.938rem; }
+  ul, ol { margin: 0; padding-left: 1.25rem; }
+  li { margin-bottom: 0.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { text-align: left; color: var(--muted); font-weight: 600; }
+  th, td { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  code { font: 0.85em ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Factory Inventory Management</h1>
+  <p class="lede">A Vue 3 single-page app talking to a FastAPI service over JSON. Data is loaded from JSON files into memory at startup, with no database. All changes are lost on restart.</p>
+
+  <h2>System architecture</h2>
+  <div class="card">
+    <svg viewBox="0 0 960 330" role="img" aria-label="The browser runs the Vue app on port 3000, which calls the FastAPI service on port 8001 over HTTP. FastAPI reads data held in memory by mock_data.py, which loads JSON files at startup.">
+      <defs><marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z"/></marker></defs>
+
+      <rect class="fe" x="10" y="20" width="300" height="290" rx="10"/>
+      <text x="30" y="50" font-weight="600">Vue 3 client</text>
+      <text class="sub" x="30" y="70">Vite dev server, port 3000</text>
+      <text x="30" y="104" font-size="13">Views (9), via vue-router</text>
+      <text class="sub" x="30" y="122">Dashboard, Inventory, Orders, Spending, Demand,</text>
+      <text class="sub" x="30" y="139">Restocking, Backlog, Reports, Activity</text>
+      <text x="30" y="170" font-size="13">Composables (shared state)</text>
+      <text class="sub" x="30" y="188">useFilters, useI18n, useAuth</text>
+      <text x="30" y="219" font-size="13">Locales</text>
+      <text class="sub" x="30" y="237">en.js, ja.js (USD or JPY display)</text>
+      <text x="30" y="268" font-size="13">api.js</text>
+      <text class="sub" x="30" y="286">The single axios client for all calls</text>
+
+      <rect class="be" x="400" y="20" width="250" height="290" rx="10"/>
+      <text x="420" y="50" font-weight="600">FastAPI service</text>
+      <text class="sub" x="420" y="70">main.py, uvicorn, port 8001</text>
+      <text x="420" y="104" font-size="13">Routes under /api</text>
+      <text class="sub" x="420" y="122">Reads, plus restocking, tasks, and POs</text>
+      <text x="420" y="153" font-size="13">Filter helpers</text>
+      <text class="sub" x="420" y="171">apply_filters, filter_by_month</text>
+      <text x="420" y="202" font-size="13">Restocking logic</text>
+      <text class="sub" x="420" y="220">Server-side pricing and budget checks</text>
+      <text x="420" y="251" font-size="13">Pydantic models</text>
+      <text class="sub" x="420" y="269">Validate requests and shape responses</text>
+
+      <rect class="da" x="740" y="20" width="210" height="290" rx="10"/>
+      <text x="760" y="50" font-weight="600">Data</text>
+      <text class="sub" x="760" y="70">mock_data.py, in memory</text>
+      <text class="sub" x="760" y="104">inventory.json</text>
+      <text class="sub" x="760" y="124">orders.json</text>
+      <text class="sub" x="760" y="144">demand_forecasts.json</text>
+      <text class="sub" x="760" y="164">backlog_items.json</text>
+      <text class="sub" x="760" y="184">spending.json</text>
+      <text class="sub" x="760" y="204">transactions.json</text>
+      <text class="sub" x="760" y="224">purchase_orders.json</text>
+      <text class="sub" x="760" y="244">suppliers.json</text>
+      <text class="sub" x="760" y="272">Writes and the audit log are</text>
+      <text class="sub" x="760" y="290">runtime lists, lost on restart</text>
+
+      <path class="arrow" d="M310 140H398"/>
+      <text class="label" x="325" y="130">HTTP JSON</text>
+      <path class="arrow" d="M400 190H312"/>
+      <text class="label" x="325" y="208">validated</text>
+      <path class="arrow" d="M650 165H738"/>
+      <text class="label" x="664" y="155">reads</text>
+    </svg>
+  </div>
+
+  <h2>Tech stack</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Frontend</h3>
+      <ul>
+        <li>Vue 3 Composition API, vue-router 4</li>
+        <li>Vite 8 with <code>@vitejs/plugin-vue</code></li>
+        <li>axios for HTTP</li>
+        <li>Hand-built SVG and CSS charts, no chart library</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Backend</h3>
+      <ul>
+        <li>Python 3.11+, FastAPI, uvicorn</li>
+        <li>Pydantic 2 models</li>
+        <li>pytest with FastAPI's TestClient, in <code>tests/backend</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Data</h3>
+      <ul>
+        <li>JSON files in <code>server/data</code></li>
+        <li>Loaded once at import time</li>
+        <li>Open CORS and no auth: local demo only</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Data flow: changing a filter</h2>
+  <div class="card">
+    <ol>
+      <li><code>FilterBar.vue</code> updates a ref held in the <code>useFilters</code> singleton, so every view shares it.</li>
+      <li>The active view's <code>watch</code> fires and calls its load function with <code>getCurrentFilters()</code>.</li>
+      <li><code>api.js</code> builds query params, dropping any filter set to <code>all</code>.</li>
+      <li>FastAPI applies <code>apply_filters</code> and <code>filter_by_month</code> to the in-memory lists, then aggregates if needed.</li>
+      <li>The JSON response lands in a ref. Computed properties derive totals and chart data, and the template re-renders.</li>
+    </ol>
+  </div>
+
+  <h2>Data flow: placing a restocking order</h2>
+  <div class="card">
+    <ol>
+      <li>Moving the budget slider requests <code>GET /api/restocking/recommendations?budget=N</code>.</li>
+      <li>The server computes each SKU's shortfall (forecast minus stock on hand), sorts by trend and growth, and fills the budget from the top, allowing partial lines.</li>
+      <li>Place Order sends <code>POST /api/restocking/orders</code> with SKUs and quantities only. The server re-prices the order and rejects it if it is over budget.</li>
+      <li>The Orders view reads <code>GET /api/restocking/orders</code> for its Submitted Orders section. Delivery lead time is that of the slowest line.</li>
+    </ol>
+  </div>
+
+  <h2>API surface</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Endpoint</th><th>Filters or input</th><th>Used by</th></tr></thead>
+      <tbody>
+        <tr><td><code>GET /api/inventory</code>, <code>/{id}</code>, <code>/low-stock</code></td><td>warehouse, category</td><td>Inventory, Dashboard, Demand, Backlog, alerts bell</td></tr>
+        <tr><td><code>GET /api/orders</code>, <code>/{id}</code></td><td>warehouse, category, status, month</td><td>Orders, Dashboard</td></tr>
+        <tr><td><code>GET /api/dashboard/summary</code></td><td>warehouse, category, status, month</td><td>Dashboard</td></tr>
+        <tr><td><code>GET /api/reports/quarterly</code>, <code>/monthly-trends</code></td><td>warehouse, category, status, month</td><td>Reports</td></tr>
+        <tr><td><code>GET /api/demand</code>, <code>/api/backlog</code></td><td>None; views narrow by SKU on the client</td><td>Demand, Backlog, Dashboard</td></tr>
+        <tr><td><code>GET /api/spending/*</code></td><td>None</td><td>Spending</td></tr>
+        <tr><td><code>GET /api/restocking/recommendations</code></td><td>budget (required)</td><td>Restocking</td></tr>
+        <tr><td><code>GET, POST /api/restocking/orders</code></td><td>budget, items[sku, quantity]</td><td>Restocking, Orders</td></tr>
+        <tr><td><code>GET, POST /api/tasks</code>; <code>PATCH, DELETE /{id}</code></td><td>title, priority, dueDate</td><td>My Tasks modal</td></tr>
+        <tr><td><code>GET /api/suppliers</code></td><td>None</td><td>Purchase order modal</td></tr>
+        <tr><td><code>POST /api/purchase-orders</code>, <code>GET /{backlog_item_id}</code></td><td>backlog item, supplier, quantity, unit cost, date</td><td>Purchase order modal</td></tr>
+        <tr><td><code>GET /api/audit-log</code></td><td>limit</td><td>Activity</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Known gaps</h2>
+  <div class="card">
+    <ul>
+      <li>Eight of the nine forecast SKUs are not in <code>inventory.json</code>. Restocking treats them as out of stock.</li>
+      <li><code>unit_cost</code> and <code>lead_time_days</code> on forecasts, and <code>suppliers.json</code>, are mock values.</li>
+      <li>The API base URL is hardcoded to <code>localhost:8001</code>.</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

@@ -25,6 +25,9 @@ Use the Task tool with these specialized subagents for appropriate tasks:
 - **ALWAYS use Playwright MCP tools** (`mcp__playwright__*`) for browser testing
   - Test against: `http://localhost:3000` (frontend), `http://localhost:8001` (API)
 
+## Coding Conventions
+- Always document non-obvious logic changes with comments
+
 ## Stack
 - **Frontend**: Vue 3 + Composition API + Vite (port 3000)
 - **Backend**: Python FastAPI (port 8001)
@@ -54,6 +57,9 @@ npm install && npm run dev
 - `GET /api/dashboard/summary` - All filters
 - `GET /api/demand`, `/api/backlog` - No filters
 - `GET /api/spending/*` - Summary, monthly, categories, transactions
+- `GET /api/inventory/low-stock` - Filters: warehouse, category
+- `GET /api/reports/*` - All filters
+- `GET, POST /api/restocking/*`, `/api/tasks`, `/api/purchase-orders`, `GET /api/suppliers`, `/api/audit-log`
 
 ## Common Issues
 1. Use unique keys in v-for (not `index`) - use `sku`, `month`, etc.

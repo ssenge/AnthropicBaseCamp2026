@@ -6,6 +6,13 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    restocking: '補充発注',
+    reports: 'レポート',
+    backlog: 'バックログ',
+    activity: 'アクティビティ',
+    mainNavigation: 'メインナビゲーション',
+    collapseSidebar: 'サイドバーを折りたたむ',
+    expandSidebar: 'サイドバーを展開',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -80,6 +87,7 @@ export default {
     skus: 'SKU',
     searchPlaceholder: '品目名で検索...',
     clearSearch: '検索をクリア',
+    exportCsv: 'CSVエクスポート',
     totalItems: '総品目数',
     totalValue: '総価値',
     lowStockItems: '在庫僅少品目',
@@ -198,12 +206,104 @@ export default {
     allMonths: 'すべての月'
   },
 
+  // Restocking
+  restocking: {
+    title: '補充発注',
+    description: '予算を設定して、再発注すべき品目を確認します',
+    budget: '予算',
+    budgetSlider: '補充予算',
+    maxBudget: '全品目を補充する場合: {amount}',
+    recommendedSpend: '推奨支出額',
+    remaining: '残額',
+    recommendations: '推奨品目',
+    partial: '一部のみ',
+    partialHint: '予算内では必要数量の一部しか補充できません',
+    empty: 'この予算で補充できる品目はありません。予算を増やすと推奨品目が表示されます。',
+    noNeeds: '現在、補充が必要な品目はありません。',
+    placeOrder: '発注する',
+    placing: '発注中...',
+    orderPlaced: '注文 {orderNumber} を送信しました。納品予定日: {date}',
+    viewOrders: '注文一覧を見る',
+    orderFailed: '発注できませんでした。',
+    loadError: '推奨品目の読み込みに失敗しました: {message}',
+    days: '{count}日',
+    submittedOrders: '発注済みの補充注文',
+    table: {
+      sku: 'SKU',
+      item: '品目',
+      trend: 'トレンド',
+      onHand: '現在庫',
+      needed: '必要数',
+      quantity: '推奨数量',
+      unitCost: '単価',
+      lineCost: '明細金額',
+      leadTime: 'リードタイム',
+      orderNumber: '注文番号',
+      submittedAt: '発注日',
+      items: '品目',
+      total: '合計',
+      status: 'ステータス',
+      deliveryLeadTime: '納品リードタイム',
+      expectedDelivery: '納品予定日'
+    }
+  },
+
+  // Reports
+  reports: {
+    title: 'パフォーマンスレポート',
+    description: '四半期ごとの業績指標と月次トレンドを確認します',
+    loadError: 'レポートの読み込みに失敗しました: {message}',
+    empty: '選択したフィルターに該当するデータがありません',
+    notAvailable: '該当なし',
+    quarterly: {
+      title: '四半期別パフォーマンス',
+      quarter: '四半期',
+      totalOrders: '注文総数',
+      totalRevenue: '総収益',
+      avgOrderValue: '平均注文額',
+      fulfillmentRate: '履行率'
+    },
+    monthlyTrend: {
+      title: '月次収益トレンド'
+    },
+    monthOverMonth: {
+      title: '前月比分析',
+      month: '月',
+      orders: '注文数',
+      revenue: '収益',
+      change: '増減',
+      growthRate: '成長率'
+    },
+    stats: {
+      totalRevenue: '総収益',
+      avgMonthlyRevenue: '月平均収益',
+      totalOrders: '注文総数',
+      bestQuarter: '最高業績の四半期'
+    }
+  },
+
+  // Backlog
+  backlog: {
+    title: 'バックログ管理',
+    description: '在庫不足を追跡して解消します',
+    loadError: 'バックログの読み込みに失敗しました: {message}',
+    highPriority: '優先度: 高',
+    mediumPriority: '優先度: 中',
+    lowPriority: '優先度: 低',
+    totalItems: 'バックログ品目の合計',
+    itemsTitle: 'バックログ品目',
+    empty: 'バックログ品目はありません - すべての注文を履行できます！',
+    unitsShort: '{count}個不足',
+    days: '{count}日'
+  },
+
   // Statuses
   status: {
     delivered: '配達済み',
     shipped: '出荷済み',
     processing: '処理中',
     backordered: 'バックオーダー',
+    submitted: '発注済み',
     inStock: '在庫あり',
     lowStock: '在庫僅少',
     adequate: '適量'
@@ -304,6 +404,81 @@ export default {
     noTasks: 'タスクがありません。上記からタスクを追加してください！'
   },
 
+  // 発注書
+  purchaseOrder: {
+    createButton: '発注書を作成',
+    viewButton: '発注書を表示',
+    createTitle: '発注書の作成',
+    viewTitle: '発注書',
+    closeLabel: 'ダイアログを閉じる',
+    item: '品目',
+    shortage: '不足数',
+    units: '{count}個',
+    supplier: '仕入先',
+    selectSupplier: '仕入先を選択',
+    supplierOption: '{name} - リードタイム{days}日、評価 {rating}',
+    suppliersLoadError: '仕入先の読み込みに失敗しました',
+    quantity: '数量',
+    unitCost: '単価 (USD)',
+    unitCostHint: '1個あたりの単価を米ドルで入力してください',
+    expectedDelivery: '納品予定日',
+    deliveryHint: '仕入先のリードタイムから自動入力されます。変更できます。',
+    notes: '備考 (任意)',
+    notesLabel: '備考',
+    total: '合計',
+    submit: '発注書を作成',
+    submitting: '作成中...',
+    poNumber: '発注番号',
+    status: 'ステータス',
+    createdDate: '作成日',
+    loadError: '発注書の読み込みに失敗しました',
+    createError: '発注書の作成に失敗しました',
+    noNotes: '備考なし',
+    statusValues: {
+      submitted: '提出済み'
+    }
+  },
+
+  // アクティビティログ
+  activity: {
+    title: 'アクティビティログ',
+    description: 'システムで行われた最近の変更を新しい順に表示します',
+    refresh: '更新',
+    loadError: 'アクティビティログの読み込みに失敗しました',
+    empty: 'アクティビティはまだありません。タスク、補充注文、発注書などの変更がここに表示されます。',
+    table: {
+      time: '日時',
+      action: '操作',
+      entity: '対象',
+      reference: '参照ID',
+      detail: '詳細'
+    },
+    actions: {
+      created: '作成',
+      updated: '更新',
+      deleted: '削除'
+    },
+    entities: {
+      restock_order: '補充注文',
+      task: 'タスク',
+      purchase_order: '発注書'
+    }
+  },
+
+  // 在庫不足アラート
+  lowStock: {
+    title: '在庫不足アラート',
+    bellLabel: '在庫不足アラート: {count}件',
+    empty: '現在のフィルターでは在庫不足の品目はありません。',
+    onHand: '在庫 {onHand} / 発注点 {reorder}',
+    viewInventory: '在庫を表示',
+    moreItems: '他{count}件は表示されていません',
+    severity: {
+      critical: '緊急',
+      warning: '警告'
+    }
+  },
+
   // Language
   language: {
     english: 'English',
@@ -328,6 +503,13 @@ export default {
 
   // Product Names
   productNames: {
+    'Industrial Widget Type A': '工業用ウィジェット タイプA',
+    'Steel Bearing Assembly': '鋼製ベアリング組立',
+    'High-Temperature Gasket': '耐熱ガスケット',
+    'Electric Motor 5HP': '5馬力電動モーター',
+    'Oil Filter Cartridge': 'オイルフィルターカートリッジ',
+    'Pressure Relief Valve': '圧力逃がし弁',
+    'Logic Controller Board': 'ロジックコントローラーボード',
     'Single Layer PCB Assembly': '単層PCB組立',
     'Dual Layer PCB Assembly': '二層PCB組立',
     'Multi Layer PCB Assembly': '多層PCB組立',
