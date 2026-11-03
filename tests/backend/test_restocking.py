@@ -90,3 +90,25 @@ class TestRestockOrders:
     ])
     def test_malformed_order_returns_422(self, client, body):
         assert client.post("/api/restocking/orders", json=body).status_code == 422
+
+    def test_repeat_order_rejected(self, client):
+        body = {"budget": 100000, "items": [{"item_sku": "WDG-001", "quantity": 450}]}
+        assert client.post("/api/restocking/orders", json=body).status_code == 201
+        response = client.post("/api/restocking/orders", json=body)
+        assert response.status_code == 400
+        assert "does not need restocking" in response.json()["detail"]
+        assert len(client.get("/api/restocking/orders").json()) == 1
+
+    def test_partial_order_reduces_remaining_need(self, client):
+        def order(quantity):
+            return client.post("/api/restocking/orders", json={
+                "budget": 100000,
+                "items": [{"item_sku": "WDG-001", "quantity": quantity}]
+            }).status_code
+
+        assert order(100) == 201
+        plan = client.get("/api/restocking/recommendations?budget=10000000").json()
+        line = next(r for r in plan["recommendations"] if r["item_sku"] == "WDG-001")
+        assert line["needed"] == 350
+        assert order(351) == 400
+        assert order(350) == 201
